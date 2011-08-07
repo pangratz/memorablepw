@@ -8,7 +8,7 @@ var twitter = new Twitter(props);
 var executeAppleScript = function(pwLength){
 	pwLength = pwLength || 18;
 	pwLength = Math.min(Math.max(8, pwLength), 31);
-	applescript.execFile('get_password.scpt', [pwLength], function(err, rtn) {
+	applescript.execFile('get_password.applescript', [pwLength], function(err, rtn) {
 		if (err) {
 			// Something went wrong!
 		}
