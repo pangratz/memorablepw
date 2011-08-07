@@ -20,7 +20,7 @@ var executeAppleScript = function(pwLength){
 		
 		setTimeout(function(){
 			executeAppleScript(pwLength < 31 ? pwLength + 1 : 8);
-		}, 1000*60*5);
+		}, 1000*60*10);
 	});
 };
 
