@@ -1,3 +1,5 @@
+## Usage
+
 ### Prerequisites
 
 * Node.js
@@ -23,9 +25,6 @@
 			"access_token_key": "YOUR ACCESS TOKEN KEY HERE",
 			"access_token_secret": "YOUR ACCESS TOKEN SECRET HERE"
 		}
-
-	
-		
 		
 * download code poetry's Mac OS X Password Assistant wrapper from [http://www.codepoetry.net/products/passwordassistant](http://www.codepoetry.net/products/passwordassistant) and store it inside the `memorablepw` folder
 
@@ -34,3 +33,7 @@
 to start the nodejs script which generates memorable passwords and tweets them, simply execute
 		
 	node tweet_passwords.js
+
+## Thanks
+
+... go out to Nathan Rajlich for providing the [node-applescript](https://github.com/TooTallNate/node-applescript) module and to Code Poetry (i guess this is the real name), for providing an [app](http://www.codepoetry.net/products/passwordassistant) which triggers Mac OS X's Password Assistant dialog
