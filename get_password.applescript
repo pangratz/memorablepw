@@ -9,9 +9,13 @@ on run argv
 	
 	tell application "System Events"
 		tell process "Password Assistant"
+			-- set password length
 			set the value of slider 1 of group 1 of window 1 to PWD_LENGTH
+			-- open 'Type' combobox
 			click pop up button 1 of group 1 of window 1
+			-- select 'Memorable' in the combobox, so a new password is generated
 			click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
+			-- get the first generated password
 			set PWD to the value of combo box 1 of group 1 of window 1
 		end tell
 	end tell
