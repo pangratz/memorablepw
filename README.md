@@ -15,7 +15,7 @@
 		npm install applescript
 		npm install twitter
 		
-* create a an **read-and-write** app on [https://dev.twitter.com/](https://dev.twitter.com/) and save the OAuth credentials in a file named `twitter_properties.json` and structured like follows:
+* create a **read-and-write** app on [https://dev.twitter.com/](https://dev.twitter.com/) and save the OAuth credentials in a file named `twitter_properties.json` and structured like follows:
 
 		{
 			"consumer_key": "YOUR CONSUMER KEY HERE",
