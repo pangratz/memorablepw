@@ -1,3 +1,9 @@
 Password Assistant.app
 node_modules
 twitter_properties.json
+
+.classpath
+.settings
+.project
+
+target

@@ -221,12 +221,6 @@
 							</includes>
 						</resource>
 					</webResources>
-					<webResources>
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>src/main/sproutcore/tmp/build</directory>
-						</resource>
-					</webResources>
 				</configuration>
 			</plugin>
 
