@@ -1,6 +1,7 @@
 package com.pangratz.memorablepw.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -143,6 +144,36 @@ public class ModelUtilsTest extends TestCase {
 		assertNotNull(modelPws);
 		assertEquals(1, modelPws.size());
 		assertEquals("abcd", modelPws.get(0).getText());
+	}
+
+	public void testStatistics() {
+		List<Password> passwords = new LinkedList<Password>();
+		passwords.add(createPassword("abcabcabc"));
+		passwords.add(createPassword("defdefdef"));
+		passwords.add(createPassword("ghighighi"));
+		passwords.add(createPassword("aaaaaaaaaaaa"));
+		passwords.add(createPassword("bbbbbbbbbbbb"));
+		modelUtils.addPasswords(passwords);
+
+		Statistic statistic = modelUtils.getStatistic();
+		assertNotNull(statistic);
+		for (int i = 8; i <= 31; i++) {
+			if (i == 9) {
+				assertEquals(3, statistic.getPasswordsCount(9));
+			} else if (i == 12) {
+				assertEquals(2, statistic.getPasswordsCount(12));
+			} else {
+				assertEquals(0, statistic.getPasswordsCount(i));
+			}
+		}
+	}
+
+	public void testStatisticsGetIndex() {
+		Statistic stat = new Statistic();
+		assertEquals(0, stat.getIndex(7));
+		assertEquals(0, stat.getIndex(8));
+		assertEquals(23, stat.getIndex(31));
+		assertEquals(23, stat.getIndex(32));
 	}
 
 	public void testUpdateNextPasswordLength() {

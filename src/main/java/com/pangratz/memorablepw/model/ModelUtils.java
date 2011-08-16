@@ -74,6 +74,24 @@ public class ModelUtils {
 		}
 	}
 
+	public Statistic getStatistic() {
+		PersistenceManager pm = mPMF.getPersistenceManager();
+		try {
+			Query query = pm.newQuery(Password.class, "length == lengthParam");
+			query.declareParameters("int lengthParam");
+			query.setResult("count(length)");
+
+			Statistic statistic = new Statistic();
+			for (int i = 8; i <= 31; i++) {
+				Integer count = (Integer) query.execute(i);
+				statistic.setPasswordCount(i, count.intValue());
+			}
+			return statistic;
+		} finally {
+			pm.close();
+		}
+	}
+
 	public void removePassword(String password) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
