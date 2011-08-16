@@ -1,13 +1,17 @@
 package com.pangratz.memorablepw.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 
 import com.pangratz.memorablepw.model.ModelUtils;
 import com.pangratz.memorablepw.model.Password;
@@ -16,24 +20,29 @@ public class TweetPasswordServlet extends HttpServlet {
 
 	private static final Logger log = Logger.getLogger(TweetPasswordServlet.class.getName());
 	private ModelUtils mModelUtils;
+	private Twitter mTwitter;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
 
 		mModelUtils = ModelUtils.getInstance();
+		mTwitter = TwitterFactory.getSingleton();
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		PrintWriter writer = resp.getWriter();
 		Password pw = mModelUtils.getNextPassword(0, "en");
 		if (pw != null) {
-			writer.write("tweet password: " + pw.getText());
+			try {
+				String tanga = pw.getText();
+				mTwitter.updateStatus(tanga);
+				mModelUtils.removePassword(tanga);
+			} catch (TwitterException e) {
+				log.log(Level.SEVERE, e.getErrorMessage(), e);
+			}
 		} else {
-			writer.write("no password available for lang en");
+			log.log(Level.SEVERE, "no more passwords available :( !! feed me!");
 		}
-		writer.flush();
-		writer.close();
 	}
 }
