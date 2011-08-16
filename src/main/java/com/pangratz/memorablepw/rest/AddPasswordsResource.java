@@ -30,34 +30,28 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 
 	@Override
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
-		if (entity != null) {
-			try {
-				log.log(Level.WARNING, "entityText: " + entity.getText());
+		try {
+			JsonRepresentation represent = new JsonRepresentation(entity);
+			JSONArray json = represent.getJsonArray();
 
-				JsonRepresentation represent = new JsonRepresentation(entity);
-				JSONArray json = represent.getJsonArray();
-
-				// iterate over each password entry
-				List<Password> passwords = new LinkedList<Password>();
-				int length = json.length();
-				for (int i = 0; i < length; i++) {
-					JSONObject object = (JSONObject) json.get(i);
-					String lang = object.has("lang") ? object.getString("lang") : "en";
-					String pw = object.getString("text");
-					passwords.add(new Password(pw, lang));
-				}
-
-				// add passwords to model
-				mModelUtils.addPasswords(passwords);
-
-				return createSuccessRepresentation("added passwords");
-			} catch (Exception e) {
-				log.log(Level.WARNING, e.getMessage(), e);
-				setStatus(Status.SERVER_ERROR_INTERNAL);
+			// iterate over each password entry
+			List<Password> passwords = new LinkedList<Password>();
+			int length = json.length();
+			for (int i = 0; i < length; i++) {
+				JSONObject object = (JSONObject) json.get(i);
+				String lang = object.has("lang") ? object.getString("lang") : "en";
+				String pw = object.getString("text");
+				passwords.add(new Password(pw, lang));
 			}
 
-			return createErrorRepresentation("error while creating passwords");
+			// add passwords to model
+			mModelUtils.addPasswords(passwords);
+
+			return createSuccessRepresentation("added passwords");
+		} catch (Exception e) {
+			log.log(Level.WARNING, e.getMessage(), e);
+			setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
-		return createErrorRepresentation("no passwords in body");
+		return createErrorRepresentation("error while creating passwords");
 	}
 }
