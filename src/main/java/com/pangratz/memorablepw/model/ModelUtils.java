@@ -57,12 +57,62 @@ public class ModelUtils {
 		}
 	}
 
+	public int getNextPasswordLength() {
+		PersistenceManager pm = mPMF.getPersistenceManager();
+		try {
+			Query configQuery = pm.newQuery(Configuration.class);
+			configQuery.setUnique(true);
+			Object object = configQuery.execute();
+			if (object == null) {
+				createConfigurationObject();
+				return getNextPasswordLength();
+			}
+			Configuration config = (Configuration) object;
+			return config.getNextPasswordLength();
+		} finally {
+			pm.close();
+		}
+	}
+
 	public void removePassword(String password) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
 			Query query = pm.newQuery(Password.class, "text == passwordParam");
 			query.declareParameters("String passwordParam");
 			query.deletePersistentAll(password);
+		} finally {
+			pm.close();
+		}
+	}
+
+	public void updateNextPasswordLength() {
+		PersistenceManager pm = mPMF.getPersistenceManager();
+		try {
+			Query configQuery = pm.newQuery(Configuration.class);
+			configQuery.setUnique(true);
+			Object object = configQuery.execute();
+			Configuration config = null;
+			if (object == null) {
+				config = createConfigurationObject();
+			} else {
+				config = (Configuration) object;
+			}
+			int passwordLength = config.getNextPasswordLength();
+			passwordLength++;
+			passwordLength = (passwordLength > 31) ? 8 : passwordLength;
+			config.setNextPasswordLength(passwordLength);
+			pm.makePersistent(config);
+		} finally {
+			pm.close();
+		}
+	}
+
+	private Configuration createConfigurationObject() {
+		PersistenceManager pm = mPMF.getPersistenceManager();
+		try {
+			Configuration configuration = new Configuration();
+			configuration.setNextPasswordLength(8);
+			return pm.makePersistent(configuration);
 		} finally {
 			pm.close();
 		}

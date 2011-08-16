@@ -93,6 +93,20 @@ public class ModelUtilsTest extends TestCase {
 		assertEquals(3, password.getLength());
 	}
 
+	public void testGetNextPasswordLength() {
+		Configuration config = new Configuration();
+		config.setNextPasswordLength(10);
+		pm.makePersistent(config);
+
+		int _length = modelUtils.getNextPasswordLength();
+		assertEquals(10, _length);
+	}
+
+	public void testGetNextPasswordLengthInitial() {
+		int _length = modelUtils.getNextPasswordLength();
+		assertEquals(8, _length);
+	}
+
 	public void testGetPassword() {
 		Password pw1 = createPassword("abc");
 		Password pw2 = createPassword("abcd");
@@ -129,6 +143,22 @@ public class ModelUtilsTest extends TestCase {
 		assertNotNull(modelPws);
 		assertEquals(1, modelPws.size());
 		assertEquals("abcd", modelPws.get(0).getText());
+	}
+
+	public void testUpdateNextPasswordLength() {
+		assertEquals(8, modelUtils.getNextPasswordLength());
+		modelUtils.updateNextPasswordLength();
+		assertEquals(9, modelUtils.getNextPasswordLength());
+	}
+
+	public void testUpdateNextPasswordLengthOverflow() {
+		Configuration configuration = new Configuration();
+		configuration.setNextPasswordLength(31);
+		pm.makePersistent(configuration);
+
+		assertEquals(31, modelUtils.getNextPasswordLength());
+		modelUtils.updateNextPasswordLength();
+		assertEquals(8, modelUtils.getNextPasswordLength());
 	}
 
 	private Password createPassword(String string) {

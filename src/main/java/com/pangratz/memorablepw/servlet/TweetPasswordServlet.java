@@ -32,12 +32,14 @@ public class TweetPasswordServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Password pw = mModelUtils.getNextPassword(0, "en");
+		int length = mModelUtils.getNextPasswordLength();
+		Password pw = mModelUtils.getNextPassword(length);
 		if (pw != null) {
 			try {
 				String tanga = pw.getText();
 				mTwitter.updateStatus(tanga);
 				mModelUtils.removePassword(tanga);
+				mModelUtils.updateNextPasswordLength();
 			} catch (TwitterException e) {
 				log.log(Level.SEVERE, e.getErrorMessage(), e);
 			}
