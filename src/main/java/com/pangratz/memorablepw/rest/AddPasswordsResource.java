@@ -2,6 +2,8 @@ package com.pangratz.memorablepw.rest;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +19,8 @@ import com.pangratz.memorablepw.model.Password;
 
 public class AddPasswordsResource extends MemorablePwServerResource {
 
+	private static final Logger log = Logger.getLogger(AddPasswordsResource.class.getName());
+
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
@@ -28,6 +32,8 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		if (entity != null) {
 			try {
+				log.log(Level.WARNING, "entityText: " + entity.getText());
+
 				JsonRepresentation represent = new JsonRepresentation(entity);
 				JSONArray json = represent.getJsonArray();
 
@@ -46,7 +52,7 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 
 				return createSuccessRepresentation("added passwords");
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.log(Level.WARNING, e.getMessage(), e);
 				setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 

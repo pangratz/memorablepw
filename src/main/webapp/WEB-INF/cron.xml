@@ -1,0 +1,7 @@
+<cronentries>
+	<cron>
+		<url>/tweetPassword</url>
+		<description>Tweet a new password every 10 minutes</description>
+		<schedule>every 10 minutes synchronized</schedule>
+	</cron>
+</cronentries>
