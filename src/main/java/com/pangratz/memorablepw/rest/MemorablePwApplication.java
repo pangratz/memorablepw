@@ -9,8 +9,6 @@ public class MemorablePwApplication extends Application {
 	@Override
 	public Restlet createInboundRoot() {
 		Router router = new Router(getContext());
-		router.attach("/password/length/{length}", RetrievePasswordResource.class);
-		router.attach("/password/{password}", RemovePasswordResource.class);
 		router.attach("/password", AddPasswordsResource.class);
 		return router;
 	}
