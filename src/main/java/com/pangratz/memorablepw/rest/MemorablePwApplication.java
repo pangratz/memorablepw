@@ -10,6 +10,7 @@ public class MemorablePwApplication extends Application {
 	public Restlet createInboundRoot() {
 		Router router = new Router(getContext());
 		router.attach("/password", AddPasswordsResource.class);
+		router.attach("/statistic", StatisticResource.class);
 		return router;
 	}
 }
