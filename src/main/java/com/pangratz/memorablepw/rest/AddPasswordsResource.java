@@ -32,6 +32,8 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		if (entity != null) {
 			try {
+				log.info("entityText: " + entity.getText());
+
 				JsonRepresentation represent = new JsonRepresentation(entity);
 				JSONArray json = represent.getJsonArray();
 
