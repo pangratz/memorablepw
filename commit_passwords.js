@@ -3,8 +3,6 @@ var http = require('http');
 
 var postPassword = function(pw) {
 	
-	
-	
 	var body = JSON.stringify([{
 		text: pw,
 		lang: 'en'
