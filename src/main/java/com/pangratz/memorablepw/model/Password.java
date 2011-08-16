@@ -1,6 +1,5 @@
 package com.pangratz.memorablepw.model;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -9,49 +8,66 @@ import javax.jdo.annotations.PrimaryKey;
 public class Password {
 
 	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long key;
-
 	@Persistent
-	private String password;
+	private String text;
 
 	@Persistent
 	private int length;
 
+	@Persistent
+	private String lang;
+
+	@Persistent
+	private long created;
+
 	public Password() {
 		super();
+		this.created = System.currentTimeMillis();
 	}
 
 	public Password(String pw) {
+		this(pw, "en");
+	}
+
+	public Password(String pw, String lang) {
 		this();
-		this.password = pw;
+		this.text = pw;
 		if (pw != null) {
 			this.length = pw.length();
 		}
+		this.lang = lang;
 	}
 
-	public Long getKey() {
-		return key;
+	public long getCreated() {
+		return created;
+	}
+
+	public String getLang() {
+		return lang;
 	}
 
 	public int getLength() {
 		return length;
 	}
 
-	public String getPassword() {
-		return password;
+	public String getText() {
+		return text;
 	}
 
-	public void setKey(Long key) {
-		this.key = key;
+	public void setCreated(long created) {
+		this.created = created;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 
 	public void setLength(int length) {
 		this.length = length;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setText(String password) {
+		this.text = password;
 	}
 
 }

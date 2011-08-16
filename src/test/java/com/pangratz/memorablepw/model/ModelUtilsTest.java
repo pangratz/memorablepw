@@ -33,6 +33,66 @@ public class ModelUtilsTest extends TestCase {
 		assertEquals(2, modelPws.size());
 	}
 
+	public void testAddSamePasswords() {
+		Password pw1 = createPassword("abcd");
+		Password pw2 = createPassword("abcd");
+		List<Password> passwords = new ArrayList<Password>();
+		passwords.add(pw1);
+		passwords.add(pw2);
+
+		modelUtils.addPasswords(passwords);
+
+		Query query = pm.newQuery(Password.class);
+		List<Password> modelPws = (List<Password>) query.execute();
+
+		assertNotNull(modelPws);
+		assertEquals(1, modelPws.size());
+	}
+
+	public void testGetGermanPassword() {
+		List<Password> passwords = new ArrayList<Password>();
+		passwords.add(createPassword("hello"));
+		passwords.add(createPassword("hi"));
+		passwords.add(createPassword("hallo", "de"));
+
+		modelUtils.addPasswords(passwords);
+
+		Password password = modelUtils.getNextPassword(5, "de");
+		assertNotNull(password);
+		assertEquals("hallo", password.getText());
+		assertEquals(5, password.getLength());
+	}
+
+	public void testGetNextAvailablePassword() {
+		Password pw1 = createPassword("abc");
+		Password pw2 = createPassword("abcd");
+		List<Password> passwords = new ArrayList<Password>();
+		passwords.add(pw1);
+		passwords.add(pw2);
+
+		modelUtils.addPasswords(passwords);
+
+		Password password = modelUtils.getNextPassword(2);
+		assertNotNull(password);
+		assertEquals("abc", password.getText());
+		assertEquals(3, password.getLength());
+	}
+
+	public void testGetNextAvailablePassword2() {
+		Password pw1 = createPassword("abc");
+		Password pw2 = createPassword("abcd");
+		List<Password> passwords = new ArrayList<Password>();
+		passwords.add(pw1);
+		passwords.add(pw2);
+
+		modelUtils.addPasswords(passwords);
+
+		Password password = modelUtils.getNextPassword(5);
+		assertNotNull(password);
+		assertEquals("abc", password.getText());
+		assertEquals(3, password.getLength());
+	}
+
 	public void testGetPassword() {
 		Password pw1 = createPassword("abc");
 		Password pw2 = createPassword("abcd");
@@ -44,8 +104,13 @@ public class ModelUtilsTest extends TestCase {
 
 		Password password = modelUtils.getNextPassword(3);
 		assertNotNull(password);
-		assertEquals("abc", password.getPassword());
+		assertEquals("abc", password.getText());
 		assertEquals(3, password.getLength());
+	}
+
+	public void testNotAvailablePassword() {
+		Password password = modelUtils.getNextPassword(4);
+		assertNull(password);
 	}
 
 	public void testRemovePassword() {
@@ -63,11 +128,15 @@ public class ModelUtilsTest extends TestCase {
 
 		assertNotNull(modelPws);
 		assertEquals(1, modelPws.size());
-		assertEquals("abcd", modelPws.get(0).getPassword());
+		assertEquals("abcd", modelPws.get(0).getText());
 	}
 
 	private Password createPassword(String string) {
 		return new Password(string);
+	}
+
+	private Password createPassword(String string, String lang) {
+		return new Password(string, lang);
 	}
 
 	@Override

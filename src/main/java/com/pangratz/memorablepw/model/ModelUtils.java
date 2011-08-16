@@ -31,16 +31,25 @@ public class ModelUtils {
 	}
 
 	public Password getNextPassword(int length) {
+		return getNextPassword(length, null);
+	}
+
+	public Password getNextPassword(int length, String lang) {
 		int _length = Math.max(length, 0);
+		String _lang = (lang != null) ? lang : "en";
 
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query query = pm.newQuery(Password.class, "length == lengthParam");
-			query.declareParameters("Integer lengthParam");
+			Query query = pm.newQuery(Password.class, "length >= lengthParam && lang == langParam");
+			query.declareParameters("Integer lengthParam, String langParam");
+			query.setOrdering("length ascending, created ascending");
 			query.setRange(0, 1);
-			List<Password> passwords = (List<Password>) query.execute(_length);
+			List<Password> passwords = (List<Password>) query.execute(_length, _lang);
 			if (passwords != null && passwords.size() == 1) {
 				return passwords.get(0);
+			}
+			if (_length != 0) {
+				return getNextPassword(0, lang);
 			}
 			return null;
 		} finally {
@@ -51,7 +60,7 @@ public class ModelUtils {
 	public void removePassword(String password) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query query = pm.newQuery(Password.class, "password == passwordParam");
+			Query query = pm.newQuery(Password.class, "text == passwordParam");
 			query.declareParameters("String passwordParam");
 			query.deletePersistentAll(password);
 		} finally {
