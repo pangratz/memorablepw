@@ -1,11 +1,35 @@
 var applescript = require('applescript');
 var http = require('http');
 
-var httpOptions = {
-	host: 'memorablepw.appspot.com',
-	path: '/password',
-	'content-type': 'application/json',
-	method: 'POST'
+var postPassword = function(pw) {
+	
+	
+	
+	var body = JSON.stringify([{
+		text: pw,
+		lang: 'en'
+	}]);
+	
+	var options = {
+		host: 'memorablepw.appspot.com',
+		path: '/password',
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': body.length
+		}
+	};
+	
+	var req = http.request(options, function(res) {
+		res.setEncoding('utf8');
+		console.log("Got response: " + res.statusCode);
+		console.log('HEADERS: ' + JSON.stringify(res.headers));  
+		res.on('data', function(chunk) {
+			console.log("Body: \n" + chunk);
+		});
+	});
+	req.write(body);
+	req.end();
 };
 
 var executeAppleScript = function(pwLength){
@@ -14,26 +38,11 @@ var executeAppleScript = function(pwLength){
 	applescript.execFile('get_password.applescript', [pwLength], function(err, rtn) {
 		if (err) {
 			// Something went wrong!
+			console.log(err);
+			return;
 		}
 		console.log('length: ' + pwLength + ' password = ' + rtn);
-		if (rtn) {
-			var req = http.request(httpOptions, function(res){
-				res.setEncoding('utf8');
-				
-				res.on('data',function(chunk){
-					console.log(chunk);
-				});
-			});
-			req.on('error', function(e) {
-			  console.log('problem with request: ' + e.message);
-			});
-			var pw = {
-				text: rtn,
-				lang: "en"
-			};
-			req.write(JSON.stringify(pw));
-			req.end();
-		}
+		postPassword(rtn);
 	});
 };
 
