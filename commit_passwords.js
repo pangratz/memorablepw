@@ -3,11 +3,14 @@ var http = require('http');
 
 var postPassword = function(pw) {
 	
-	var body = JSON.stringify([{
-		text: pw,
-		lang: 'en'
-	}]);
-	
+	var pwArr = pw.map(function(item){
+		return {
+			text: item,
+			lang: 'en'
+		};
+	});	
+	var body = JSON.stringify(pwArr);
+	console.log(body);
 	var options = {
 		host: 'memorablepw.appspot.com',
 		path: '/password',
@@ -39,9 +42,9 @@ var executeAppleScript = function(pwLength){
 			console.log(err);
 			return;
 		}
-		console.log('length: ' + pwLength + ' password = ' + rtn);
 		postPassword(rtn);
 	});
 };
 
-executeAppleScript(18);
+var length = process.argv[2] || 18;
+executeAppleScript( length );
