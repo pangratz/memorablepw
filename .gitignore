@@ -1,6 +1,6 @@
 Password Assistant.app
 node_modules
-twitter_properties.json
+src/main/resources/twitter4j.properties
 
 .classpath
 .settings
