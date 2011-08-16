@@ -37,15 +37,14 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 				for (int i = 0; i < length; i++) {
 					JSONObject object = (JSONObject) json.get(i);
 					String lang = object.has("lang") ? object.getString("lang") : "en";
-					String pw = object.getString("password");
-					System.out.println(pw + " --> " + lang);
+					String pw = object.getString("text");
 					passwords.add(new Password(pw, lang));
 				}
 
 				// add passwords to model
 				mModelUtils.addPasswords(passwords);
 
-				return createSuccessRepresentation("created passwords");
+				return createSuccessRepresentation("added passwords");
 			} catch (Exception e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL);
