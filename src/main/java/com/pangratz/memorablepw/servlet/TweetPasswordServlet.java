@@ -1,6 +1,7 @@
 package com.pangratz.memorablepw.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -25,12 +26,14 @@ public class TweetPasswordServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		PrintWriter writer = resp.getWriter();
 		Password pw = mModelUtils.getNextPassword(0, "en");
 		if (pw != null) {
-			log.info("tweet password: " + pw.getText());
+			writer.write("tweet password: " + pw.getText());
 		} else {
-			log.info("no password available for lang en");
+			writer.write("no password available for lang en");
 		}
-		resp.flushBuffer();
+		writer.flush();
+		writer.close();
 	}
 }
