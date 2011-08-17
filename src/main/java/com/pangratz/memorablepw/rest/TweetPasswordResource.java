@@ -30,15 +30,16 @@ public class TweetPasswordResource extends MemorablePwServerResource {
 		int length = mModelUtils.getNextPasswordLength();
 		Password pw = mModelUtils.getNextPassword(length);
 		if (pw != null) {
+			String tanga = null;
 			try {
-				String tanga = pw.getText();
+				tanga = pw.getText();
 				mTwitter.updateStatus(tanga);
 				mModelUtils.removePassword(tanga);
 				mModelUtils.updateNextPasswordLength();
 
 				return createSuccessRepresentation("tweeted password: " + tanga);
 			} catch (TwitterException e) {
-				return createErrorRepresentation(e.getErrorMessage());
+				return createErrorRepresentation("could not tweet password " + tanga + " --> " + e.getErrorMessage());
 			}
 		} else {
 			return createErrorRepresentation("no password available! feed me :(");
