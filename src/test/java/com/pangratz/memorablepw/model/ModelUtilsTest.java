@@ -166,6 +166,7 @@ public class ModelUtilsTest extends TestCase {
 				assertEquals(0, statistic.getPasswordsCount(i));
 			}
 		}
+		assertEquals(5, statistic.getOverallPasswordsCount());
 	}
 
 	public void testStatisticsGetIndex() {
