@@ -11,6 +11,7 @@ public class MemorablePwApplication extends Application {
 		Router router = new Router(getContext());
 		router.attach("/password", AddPasswordsResource.class);
 		router.attach("/statistic", StatisticResource.class);
+		router.attach("/tweetPassword", TweetPasswordResource.class);
 		return router;
 	}
 }

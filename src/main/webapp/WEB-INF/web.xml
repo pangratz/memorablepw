@@ -19,15 +19,6 @@
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	
-	<servlet-mapping>
-		<servlet-name>TweetPassword</servlet-name>
-		<url-pattern>/tweetPassword</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>TweetPassword</servlet-name>
-		<servlet-class>com.pangratz.memorablepw.servlet.TweetPasswordServlet</servlet-class>
-	</servlet>
-
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
