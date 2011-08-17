@@ -38,6 +38,10 @@ public class StatisticResource extends MemorablePwServerResource {
 			data.add(obj);
 		}
 
-		return new JsonRepresentation(new JSONArray(data));
+		Map<Object, Object> objData = new HashMap<Object, Object>();
+		objData.put("passwords", new JSONArray(data));
+		objData.put("overallPasswordsCount", statistic.getOverallPasswordsCount());
+
+		return new JsonRepresentation(new JSONObject(objData));
 	}
 }
