@@ -1,12 +1,16 @@
-package com.pangratz.memorablepw;
+package com.pangratz.memorablepw.util;
+
+import java.util.Date;
 
 import junit.framework.TestCase;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
 
-public class DateTest extends TestCase {
+import com.pangratz.memorablepw.util.TweetDateUtil;
+
+public class TweetDateUtilTest extends TestCase {
+
+	private TweetDateUtil tweetDateUtil;
 
 	public void testRounding() {
 		assertEquals(10, roundMinute(0).minuteOfHour().get());
@@ -27,20 +31,20 @@ public class DateTest extends TestCase {
 	}
 
 	private DateTime roundMinute(int minuteParam) {
-		MutableDateTime now = new MutableDateTime(2011, 8, 22, 15, minuteParam, 0, 0, DateTimeZone.UTC);
-		int origMinute = now.getMinuteOfHour();
+		DateTime startDate = new DateTime(2011, 8, 22, 15, minuteParam, 0);
+		Date nextTweetDate = tweetDateUtil.getNextTweetDate(startDate.toDate());
+		return new DateTime(nextTweetDate);
+	}
 
-		// adding 1ms guarantees that the exact edge cases are rounded up
-		MutableDateTime nextInterval = now.millisOfSecond().add(1).minuteOfHour().roundCeiling();
-		System.out.println(nextInterval);
-		int minute = nextInterval.minuteOfHour().get();
-		// [0,9] --> 10
-		// [10,19] --> 20
-		// ...
-		// [50,59] --> 00
-		int nextMinute = (((minute - 1) / 10) + 1) * 10;
-		int add = (origMinute == 59) ? 0 : (nextMinute - minute);
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		this.tweetDateUtil = TweetDateUtil.getInstance();
+	}
 
-		return nextInterval.minuteOfHour().add(add).toDateTime();
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		this.tweetDateUtil = null;
 	}
 }
