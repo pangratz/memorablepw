@@ -5,12 +5,21 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.joda.time.DateTime;
-
-import com.pangratz.memorablepw.util.TweetDateUtil;
+import org.joda.time.DateTimeZone;
 
 public class TweetDateUtilTest extends TestCase {
 
 	private TweetDateUtil tweetDateUtil;
+
+	public void testGetLastTweetDate() {
+		DateTime startDate = new DateTime(2011, 8, 22, 15, 15, 0, DateTimeZone.UTC);
+
+		Date inTwoTweetsDate = tweetDateUtil.getLastTweetDate(startDate.toDate(), 2);
+		assertEquals(new DateTime(2011, 8, 22, 15, 30, 0, DateTimeZone.UTC).getMillis(), inTwoTweetsDate.getTime());
+
+		Date inSixTweetsDate = tweetDateUtil.getLastTweetDate(startDate.toDate(), 6);
+		assertEquals(new DateTime(2011, 8, 22, 16, 10, 0, DateTimeZone.UTC).getMillis(), inSixTweetsDate.getTime());
+	}
 
 	public void testRounding() {
 		assertEquals(10, roundMinute(0).minuteOfHour().get());

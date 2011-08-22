@@ -2,6 +2,8 @@ package com.pangratz.memorablepw.util;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
 
 public class TweetDateUtil {
@@ -12,8 +14,20 @@ public class TweetDateUtil {
 		return INSTANCE;
 	}
 
+	public Date getLastTweetDate(Date startDate, int passwordsCount) {
+		Date nextTweetDate = getNextTweetDate(startDate);
+		MutableDateTime lastTweetDate = new MutableDateTime(nextTweetDate);
+		lastTweetDate.addMinutes(10 * (passwordsCount - 1));
+		return lastTweetDate.toDate();
+	}
+
+	public Date getLastTweetDate(int passwordsCount) {
+		return getLastTweetDate(new Date(), passwordsCount);
+	}
+
 	public Date getNextTweetDate() {
-		return getNextTweetDate(new Date());
+		DateTime now = new DateTime(DateTimeZone.UTC);
+		return getNextTweetDate(now.toDate());
 	}
 
 	public Date getNextTweetDate(Date startDate) {

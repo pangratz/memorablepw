@@ -1,5 +1,6 @@
 package com.pangratz.memorablepw.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
 import com.pangratz.memorablepw.model.Statistic;
+import com.pangratz.memorablepw.util.TweetDateUtil;
 
 public class StatisticResource extends MemorablePwServerResource {
 
@@ -40,7 +42,12 @@ public class StatisticResource extends MemorablePwServerResource {
 
 		Map<Object, Object> objData = new HashMap<Object, Object>();
 		objData.put("passwords", new JSONArray(data));
-		objData.put("overallPasswordsCount", statistic.getOverallPasswordsCount());
+
+		int passwordsCount = statistic.getOverallPasswordsCount();
+		objData.put("overallPasswordsCount", passwordsCount);
+
+		Date dateLastTweet = TweetDateUtil.getInstance().getLastTweetDate(passwordsCount);
+		objData.put("dateLastTweet", dateLastTweet.getTime());
 
 		return new JsonRepresentation(new JSONObject(objData));
 	}
