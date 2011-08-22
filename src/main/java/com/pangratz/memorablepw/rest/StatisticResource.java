@@ -6,6 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
@@ -48,6 +53,14 @@ public class StatisticResource extends MemorablePwServerResource {
 
 		Date dateLastTweet = TweetDateUtil.getInstance().getLastTweetDate(passwordsCount);
 		objData.put("dateLastTweet", dateLastTweet.getTime());
+
+		Interval interval = new Interval(new DateTime(DateTimeZone.UTC), new DateTime(dateLastTweet));
+		Period period = interval.toPeriod(PeriodType.dayTime());
+		Map<Object, Object> periodData = new HashMap<Object, Object>();
+		periodData.put("days", period.getDays());
+		periodData.put("hours", period.getHours());
+		periodData.put("minutes", period.getMinutes());
+		objData.put("period", new JSONObject(periodData));
 
 		return new JsonRepresentation(new JSONObject(objData));
 	}

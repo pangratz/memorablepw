@@ -6,6 +6,8 @@ import junit.framework.TestCase;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.PeriodType;
 
 public class TweetDateUtilTest extends TestCase {
 
@@ -19,6 +21,13 @@ public class TweetDateUtilTest extends TestCase {
 
 		Date inSixTweetsDate = tweetDateUtil.getLastTweetDate(startDate.toDate(), 6);
 		assertEquals(new DateTime(2011, 8, 22, 16, 10, 0, DateTimeZone.UTC).getMillis(), inSixTweetsDate.getTime());
+
+		DateTime lastTweetDate = new DateTime(tweetDateUtil.getLastTweetDate(566), DateTimeZone.UTC);
+		lastTweetDate = lastTweetDate.toDateTime(DateTimeZone.forOffsetHours(2));
+		System.out.println(lastTweetDate);
+
+		Interval interval = new Interval(new DateTime(DateTimeZone.UTC), lastTweetDate);
+		System.out.println(interval.toPeriod(PeriodType.dayTime()));
 	}
 
 	public void testRounding() {
