@@ -51,16 +51,18 @@ public class StatisticResource extends MemorablePwServerResource {
 		int passwordsCount = statistic.getOverallPasswordsCount();
 		objData.put("overallPasswordsCount", passwordsCount);
 
-		Date dateLastTweet = TweetDateUtil.getInstance().getLastTweetDate(passwordsCount);
-		objData.put("dateLastTweet", dateLastTweet.getTime());
+		if (passwordsCount > 0) {
+			Date dateLastTweet = TweetDateUtil.getInstance().getLastTweetDate(passwordsCount);
+			objData.put("dateLastTweet", dateLastTweet.getTime());
 
-		Interval interval = new Interval(new DateTime(DateTimeZone.UTC), new DateTime(dateLastTweet));
-		Period period = interval.toPeriod(PeriodType.dayTime());
-		Map<Object, Object> periodData = new HashMap<Object, Object>();
-		periodData.put("days", period.getDays());
-		periodData.put("hours", period.getHours());
-		periodData.put("minutes", period.getMinutes());
-		objData.put("period", new JSONObject(periodData));
+			Interval interval = new Interval(new DateTime(DateTimeZone.UTC), new DateTime(dateLastTweet));
+			Period period = interval.toPeriod(PeriodType.dayTime());
+			Map<Object, Object> periodData = new HashMap<Object, Object>();
+			periodData.put("days", period.getDays());
+			periodData.put("hours", period.getHours());
+			periodData.put("minutes", period.getMinutes());
+			objData.put("period", new JSONObject(periodData));
+		}
 
 		return new JsonRepresentation(new JSONObject(objData));
 	}
