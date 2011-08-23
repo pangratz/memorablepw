@@ -14,6 +14,7 @@ import com.pangratz.memorablepw.model.Password;
 
 public class TweetPasswordResource extends MemorablePwServerResource {
 
+	public static final String STATUS_CODE_DUPLICATE = "b2b52c28-1c67fec4";
 	private Twitter mTwitter;
 
 	@Override
@@ -30,15 +31,18 @@ public class TweetPasswordResource extends MemorablePwServerResource {
 		int length = mModelUtils.getNextPasswordLength();
 		Password pw = mModelUtils.getNextPassword(length);
 		if (pw != null) {
-			String tanga = null;
+			String tanga = pw.getText();
 			try {
-				tanga = pw.getText();
 				mTwitter.updateStatus(tanga);
 				mModelUtils.removePassword(tanga);
 				mModelUtils.updateNextPasswordLength();
 
 				return createSuccessRepresentation("tweeted password: " + tanga);
 			} catch (TwitterException e) {
+				// delete the password, if the status is a duplicate
+				if (STATUS_CODE_DUPLICATE.equalsIgnoreCase(e.getExceptionCode())) {
+					mModelUtils.removePassword(tanga);
+				}
 				return createErrorRepresentation("could not tweet password " + tanga + " --> " + e.getErrorMessage());
 			}
 		} else {
