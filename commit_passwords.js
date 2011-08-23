@@ -35,9 +35,7 @@ var postPassword = function(pw) {
 	req.end();
 };
 
-var executeAppleScript = function(pwLength){
-	pwLength = pwLength || 18;
-	pwLength = Math.min(Math.max(8, pwLength), 31);
+var submitPasswords = function(pwLength, pws, pwCount) {
 	applescript.execFile('get_password.applescript', [pwLength], function(err, rtn) {
 		if (err) {
 			// Something went wrong!
@@ -47,9 +45,32 @@ var executeAppleScript = function(pwLength){
 		rtn = rtn.map(function(item){
 			return querystring.escape(item);
 		});
-		postPassword(rtn);
+		
+		pws = pws.concat(rtn);
+		if (pws.length >= pwCount) {
+			var diff = pws.length - pwCount;
+			pws.splice(pwCount, diff);
+			
+			console.log('submit passwords: ' + pws);
+			postPassword(pws);
+		} else {
+			submitPasswords(pwLength, pws, pwCount);
+		}
 	});
 };
 
+var executeAppleScript = function(pwLength, pwCount){
+	pwLength = pwLength || 18;
+	pwLength = Math.min(Math.max(8, pwLength), 31);
+	
+	pwCount = pwCount || 10;
+	pwCount = Math.max(pwCount, 0);
+	
+	var allPws = [];
+	
+	submitPasswords(pwLength, allPws, pwCount);
+};
+
 var length = process.argv[2] || 18;
-executeAppleScript( length );
+var count = process.argv[3] || 10;
+executeAppleScript( length, count );
