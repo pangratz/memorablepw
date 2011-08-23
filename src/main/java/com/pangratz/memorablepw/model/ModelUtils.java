@@ -82,10 +82,13 @@ public class ModelUtils {
 			query.setResult("count(length)");
 
 			Statistic statistic = new Statistic();
+			int overallPasswordCount = 0;
 			for (int i = 8; i <= 31; i++) {
 				Integer count = (Integer) query.execute(i);
 				statistic.setPasswordCount(i, count.intValue());
+				overallPasswordCount += count.intValue();
 			}
+			statistic.setOverallPasswordsCount(overallPasswordCount);
 			return statistic;
 		} finally {
 			pm.close();
