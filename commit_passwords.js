@@ -1,5 +1,7 @@
+/*globals process*/
 var applescript = require('applescript');
 var http = require('http');
+var querystring = require('querystring');
 
 var postPassword = function(pw) {
 	
@@ -42,6 +44,9 @@ var executeAppleScript = function(pwLength){
 			console.log(err);
 			return;
 		}
+		rtn = rtn.map(function(item){
+			return querystring.escape(item);
+		});
 		postPassword(rtn);
 	});
 };

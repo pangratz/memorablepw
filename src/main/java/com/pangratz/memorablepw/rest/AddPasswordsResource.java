@@ -1,5 +1,6 @@
 package com.pangratz.memorablepw.rest;
 
+import java.net.URLDecoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,7 +41,8 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 			for (int i = 0; i < length; i++) {
 				JSONObject object = (JSONObject) json.get(i);
 				String lang = object.has("lang") ? object.getString("lang") : "en";
-				String pw = object.getString("text");
+				String pwEncoded = object.getString("text");
+				String pw = URLDecoder.decode(pwEncoded, "UTF-8");
 				passwords.add(new Password(pw, lang));
 			}
 
