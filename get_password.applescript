@@ -31,7 +31,7 @@ on run argv
 		end tell
 	end tell
 	
-	-- tell application "Password Assistant" to quit
+	tell application "Password Assistant" to quit
 	return pw_array
 	
 end run
