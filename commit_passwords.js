@@ -71,6 +71,45 @@ var executeAppleScript = function(pwLength, pwCount){
 	submitPasswords(pwLength, allPws, pwCount);
 };
 
-var length = process.argv[2] || 18;
-var count = process.argv[3] || 10;
-executeAppleScript( length, count );
+var firstParam = process.argv[2];
+var secondParam = process.argv[3];
+if (firstParam === 'fill') {
+	var fillUpTo = process.argv[3] || 0;
+	if (fillUpTo === 0) {
+		console.log('please specifiy a password count');
+	} else {
+		// get statistic
+		var opts = {
+			host: 'memorablepw.appspot.com',
+			path: '/statistic'
+		};
+		http.get(opts, function(res){
+			res.setEncoding('utf8');
+			var str = '';
+			res.on('data', function(chunk) {
+				str += chunk;
+			});
+			res.on('end', function(){
+				var statistic = JSON.parse(str);
+				var pws = statistic.passwords;
+				var x = 0;
+				for (x in pws) {
+					var length = pws[x].length;
+					var count = pws[x].count;
+					
+					// caluclate diff
+					var diff = fillUpTo - count;
+					if (diff > 0) {
+						executeAppleScript(length, diff);
+					} else {
+						console.log('there is already the specified amount of passwords for length ' + length);
+					}				
+				}
+			});
+		});
+	}
+} else {
+	var length = firstParam || 18;
+	var count = secondParam || 10;
+	executeAppleScript( length, count );
+}
