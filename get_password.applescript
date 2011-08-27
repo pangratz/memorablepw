@@ -68,7 +68,7 @@ on run argv
 						
 						
 						-- refresh password list
-						if (field_index is 10) then
+						if ((field_index - 1) mod 10 is 0) then
 							click pop up button 1 of group 1 of window 1
 							click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
 							click button 1 of combo box 1 of group 1 of window 1
