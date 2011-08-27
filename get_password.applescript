@@ -23,7 +23,7 @@ on run argv
 	-- set the password counts as specified in the arguments
 	set arg_count to count argv
 	if (arg_count) > 31 then
-	-- check that there are no password counts for password length greater that 31
+		-- check that there are no password counts for password length greater that 31
 		set arg_count to 31
 	end if
 	repeat with i from 1 to arg_count
@@ -53,13 +53,24 @@ on run argv
 					set the value of slider 1 of group 1 of window 1 to pw_length
 					
 					-- generate the passwords and fill up the list
-					repeat with i from 1 to pw_count
+					set i to 0
+					repeat while (i < pw_count)
 						-- there are 10 passwords shown ...
-						set pw to the value of text field (i mod 10) of list 1 of scroll area 1 of combo box 1 of group 1 of window 1
-						set PASSWORDS to PASSWORDS & pw
+						set reset to false
+						set pw to (the value of text field (i mod 10) of list 1 of scroll area 1 of combo box 1 of group 1 of window 1) as string
+						set pw_len to length of pw
+						if (pw_len is not pw_length) then
+							-- password length does not match
+							set reset to true
+						else
+							-- add generated password
+							set PASSWORDS to PASSWORDS & pw
+							set i to i + 1
+						end if
+						
 						
 						-- refresh password list
-						if (i mod 10 is 0) then
+						if (reset or (i mod 10 is 0)) then
 							click pop up button 1 of group 1 of window 1
 							click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
 							click button 1 of combo box 1 of group 1 of window 1
