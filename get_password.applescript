@@ -53,11 +53,13 @@ on run argv
 					set the value of slider 1 of group 1 of window 1 to pw_length
 					
 					-- generate the passwords and fill up the list
-					set i to 0
-					repeat while (i < pw_count)
+					set idx to 0
+					set generated_pws to 0
+					repeat while (generated_pws < pw_count)
 						-- there are 10 passwords shown ...
 						set reset to false
-						set pw to (the value of text field (i mod 10) of list 1 of scroll area 1 of combo box 1 of group 1 of window 1) as string
+						set field_index to ((idx mod 10) + 1)
+						set pw to (the value of text field field_index of list 1 of scroll area 1 of combo box 1 of group 1 of window 1) as string
 						set pw_len to length of pw
 						if (pw_len is not pw_length) then
 							-- password length does not match
@@ -65,16 +67,18 @@ on run argv
 						else
 							-- add generated password
 							set PASSWORDS to PASSWORDS & pw
-							set i to i + 1
+							set generated_pws to generated_pws + 1
 						end if
 						
 						
 						-- refresh password list
-						if (reset or (i mod 10 is 0)) then
+						if (reset or field_index is 10) then
 							click pop up button 1 of group 1 of window 1
 							click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
 							click button 1 of combo box 1 of group 1 of window 1
 						end if
+						
+						set idx to idx + 1
 					end repeat
 				end if
 			end repeat
