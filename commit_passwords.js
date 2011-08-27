@@ -3,6 +3,8 @@ var applescript = require('applescript');
 var http = require('http');
 var querystring = require('querystring');
 
+var HOST = 'memorablepw.appspot.com';
+
 var postPassword = function(pw) {
 	
 	var pwArr = pw.map(function(item){
@@ -14,7 +16,7 @@ var postPassword = function(pw) {
 	var body = JSON.stringify(pwArr);
 	console.log(body);
 	var options = {
-		host: 'memorablepw.appspot.com',
+		host: HOST,
 		path: '/password',
 		method: 'POST',
 		headers: {
@@ -59,6 +61,22 @@ var submitPasswords = function(pwLength, pws, pwCount) {
 	});
 };
 
+var fillStorage = function(pwCounts) {
+	applescript.execFile('get_password.applescript', pwCounts, function(err, rtn) {
+		if (err) {
+			// Something went wrong!
+			console.log(err);
+			return;
+		}
+		
+		rtn = rtn.map(function(item){
+			return querystring.escape(item);
+		});
+		
+		postPassword(rtn);
+	});
+};
+
 var executeAppleScript = function(pwLength, pwCount){
 	pwLength = pwLength || 18;
 	pwLength = Math.min(Math.max(8, pwLength), 31);
@@ -80,7 +98,7 @@ if (firstParam === 'fill') {
 	} else {
 		// get statistic
 		var opts = {
-			host: 'memorablepw.appspot.com',
+			host: HOST,
 			path: '/statistic'
 		};
 		http.get(opts, function(res){
@@ -92,19 +110,16 @@ if (firstParam === 'fill') {
 			res.on('end', function(){
 				var statistic = JSON.parse(str);
 				var pws = statistic.passwords;
+				var pwCounts = [];
 				var x = 0;
 				for (x in pws) {
-					var length = pws[x].length;
 					var count = pws[x].count;
 					
 					// caluclate diff
 					var diff = fillUpTo - count;
-					if (diff > 0) {
-						executeAppleScript(length, diff);
-					} else {
-						console.log('there is already the specified amount of passwords for length ' + length);
-					}				
+					pwCounts[x] = Math.max(0, diff);
 				}
+				fillStorage(pwCounts);
 			});
 		});
 	}
