@@ -35,20 +35,27 @@ var postPassword = function(pw) {
 	req.end();
 };
 
-var submitPasswords = function(pwLengthArr, pws) {
-	applescript.execFile('get_password.applescript', pwLengthArr, function(err, rtn) {
+var submitPasswords = function(pwLength, pws, pwCount) {
+	applescript.execFile('get_password.applescript', [pwLength], function(err, rtn) {
 		if (err) {
 			// Something went wrong!
 			console.log(err);
 			return;
 		}
-		
 		rtn = rtn.map(function(item){
 			return querystring.escape(item);
 		});
 		
-		console.log('submit passwords: ' + rtn);
-		postPassword(rtn);
+		pws = pws.concat(rtn);
+		if (pws.length >= pwCount) {
+			var diff = pws.length - pwCount;
+			pws.splice(pwCount, diff);
+			
+			console.log('submit passwords: ' + pws);
+			postPassword(pws);
+		} else {
+			submitPasswords(pwLength, pws, pwCount);
+		}
 	});
 };
 
@@ -59,17 +66,9 @@ var executeAppleScript = function(pwLength, pwCount){
 	pwCount = pwCount || 10;
 	pwCount = Math.max(pwCount, 0);
 	
-	// taken from http://stackoverflow.com/questions/2044760/default-array-values/2044990#2044990
-	Array.prototype.repeat = function(what, L) {
-		while(L) this[--L] = what;
-		return this;
-	};
+	var allPws = [];
 	
-	// new array of length 31-8 = 23
-	var pwLengthArr = [].repeat(0, 23);
-	pwLengthArr[pwLength - 8] = pwCount;
-	
-	submitPasswords(pwLengthArr);
+	submitPasswords(pwLength, allPws, pwCount);
 };
 
 var length = process.argv[2] || 18;
