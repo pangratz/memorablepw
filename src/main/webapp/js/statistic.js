@@ -1,12 +1,27 @@
 $(document).ready(function() {
 	
 	$.getJSON('/statistic', function(statisticData) {
-		var data = statisticData.passwords.map(function(item) {
-			return [item.length, item.count];
-		});
-		$.plot($('#graph'), [data]);
-		$('#overallPasswordsCount').html(statisticData.overallPasswordsCount + ' passwords');
 		
+		var i = 0;
+		var datasets = [];
+		for (i in statisticData) {
+			var statistic = statisticData[i];
+			console.log(statistic);
+			var lang = statistic['lang'];
+			datasets[i] = {
+				label: lang,
+				data: statistic.passwords.map(function(item) {
+					return [item.length, item.count];
+				})
+			};
+		}
+		
+		console.log(datasets);
+		
+		$.plot($('#graph'), datasets);
+		// $('#overallPasswordsCount').html(statisticData.overallPasswordsCount + ' passwords');
+		
+		/*
 		var lastTweetDateHtml = 'no more passwords to tweet :(';
 		if (statisticData.overallPasswordsCount > 0) {
 			var days = statisticData.period.days;
@@ -18,6 +33,7 @@ $(document).ready(function() {
 			lastTweetDateHtml = periodStr;
 		}
 		$('#lastTweetPeriod').html(lastTweetDateHtml);
+		*/
 	});
 	
 });
