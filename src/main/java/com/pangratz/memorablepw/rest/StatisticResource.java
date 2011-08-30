@@ -34,8 +34,14 @@ public class StatisticResource extends MemorablePwServerResource {
 
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
-		Statistic statistic = mModelUtils.getStatistic();
+		String lang = getQuery().getFirstValue("lang");
+		if (lang == null || "".equals(lang)) {
+			lang = "en";
+		}
+
+		Statistic statistic = mModelUtils.getStatistic(lang);
 		List<Object> data = new LinkedList<Object>();
+
 		for (int i = 8; i <= 31; i++) {
 			int count = statistic.getPasswordsCount(i);
 			Map<Object, Object> statData = new HashMap<Object, Object>();
@@ -46,6 +52,7 @@ public class StatisticResource extends MemorablePwServerResource {
 		}
 
 		Map<Object, Object> objData = new HashMap<Object, Object>();
+		objData.put("lang", statistic.getLang());
 		objData.put("passwords", new JSONArray(data));
 
 		int passwordsCount = statistic.getOverallPasswordsCount();

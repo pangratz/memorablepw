@@ -75,16 +75,20 @@ public class ModelUtils {
 	}
 
 	public Statistic getStatistic() {
+		return getStatistic("en");
+	}
+
+	public Statistic getStatistic(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query query = pm.newQuery(Password.class, "length == lengthParam");
-			query.declareParameters("int lengthParam");
+			Query query = pm.newQuery(Password.class, "length == lengthParam && lang == langParam");
+			query.declareParameters("int lengthParam, String langParam");
 			query.setResult("count(length)");
 
-			Statistic statistic = new Statistic();
+			Statistic statistic = new Statistic(lang);
 			int overallPasswordCount = 0;
 			for (int i = 8; i <= 31; i++) {
-				Integer count = (Integer) query.execute(i);
+				Integer count = (Integer) query.execute(i, lang);
 				statistic.setPasswordCount(i, count.intValue());
 				overallPasswordCount += count.intValue();
 			}

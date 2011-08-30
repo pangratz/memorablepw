@@ -170,11 +170,50 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testStatisticsGetIndex() {
-		Statistic stat = new Statistic();
+		Statistic stat = new Statistic("en");
 		assertEquals(0, stat.getIndex(7));
 		assertEquals(0, stat.getIndex(8));
 		assertEquals(23, stat.getIndex(31));
 		assertEquals(23, stat.getIndex(32));
+	}
+
+	public void testStatisticsMultipleLangs() {
+		List<Password> passwords = new LinkedList<Password>();
+		passwords.add(createPassword("abcabcabc", "en"));
+		passwords.add(createPassword("defdefdef", "en"));
+		passwords.add(createPassword("ghighighi", "en"));
+		passwords.add(createPassword("aaaaaaaaaaaa", "en"));
+		passwords.add(createPassword("bbbbbbbbbbbb", "en"));
+		passwords.add(createPassword("abcdefgh", "de"));
+		passwords.add(createPassword("abcdefghi", "de"));
+		passwords.add(createPassword("abcdefghh", "de"));
+		modelUtils.addPasswords(passwords);
+
+		Statistic enStatistic = modelUtils.getStatistic();
+		assertNotNull(enStatistic);
+		for (int i = 8; i <= 31; i++) {
+			if (i == 9) {
+				assertEquals(3, enStatistic.getPasswordsCount(9));
+			} else if (i == 12) {
+				assertEquals(2, enStatistic.getPasswordsCount(12));
+			} else {
+				assertEquals(0, enStatistic.getPasswordsCount(i));
+			}
+		}
+		assertEquals(5, enStatistic.getOverallPasswordsCount());
+
+		Statistic deStatistic = modelUtils.getStatistic("de");
+		assertNotNull(deStatistic);
+		for (int i = 8; i <= 31; i++) {
+			if (i == 8) {
+				assertEquals(1, deStatistic.getPasswordsCount(8));
+			} else if (i == 9) {
+				assertEquals(2, deStatistic.getPasswordsCount(9));
+			} else {
+				assertEquals(0, deStatistic.getPasswordsCount(i));
+			}
+		}
+		assertEquals(3, deStatistic.getOverallPasswordsCount());
 	}
 
 	public void testUpdateNextPasswordLength() {
