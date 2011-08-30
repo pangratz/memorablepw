@@ -17,6 +17,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
 import com.pangratz.memorablepw.model.Password;
+import com.pangratz.memorablepw.util.AddPasswordUtil;
 
 public class AddPasswordsResource extends MemorablePwServerResource {
 
@@ -38,16 +39,17 @@ public class AddPasswordsResource extends MemorablePwServerResource {
 			// iterate over each password entry
 			List<Password> passwords = new LinkedList<Password>();
 			int length = json.length();
+			AddPasswordUtil apu = new AddPasswordUtil();
 			for (int i = 0; i < length; i++) {
 				JSONObject object = (JSONObject) json.get(i);
 				String lang = object.has("lang") ? object.getString("lang") : "en";
 				String pwEncoded = object.getString("text");
 				String pw = URLDecoder.decode(pwEncoded, "UTF-8");
-				passwords.add(new Password(pw, lang));
+				apu.c(pw, lang);
 			}
 
 			// add passwords to model
-			mModelUtils.addPasswords(passwords);
+			mModelUtils.addPasswords(apu);
 
 			return createSuccessRepresentation("added passwords");
 		} catch (Exception e) {

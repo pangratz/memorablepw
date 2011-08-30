@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.pangratz.memorablepw.util.AddPasswordUtil;
 
 public class ModelUtilsTest extends TestCase {
 
@@ -32,6 +33,47 @@ public class ModelUtilsTest extends TestCase {
 
 		assertNotNull(modelPws);
 		assertEquals(2, modelPws.size());
+	}
+
+	public void testAddPasswordsWithAddPasswordUtil() {
+		modelUtils.updatePasswordCounters();
+
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc", "en");
+		apu.c("defdefdef", "en");
+		apu.c("ghighighi", "en");
+		apu.c("aaaaaaaaaaaa", "en");
+		apu.c("bbbbbbbbbbbb", "en");
+		apu.c("abcdefgh", "de");
+		apu.c("abcdefghi", "de");
+		apu.c("abcdefghh", "de");
+		modelUtils.addPasswords(apu);
+
+		Statistic enStatistic = modelUtils.getStatistic("en");
+		assertNotNull(enStatistic);
+		for (int i = 8; i <= 31; i++) {
+			if (i == 9) {
+				assertEquals(3, enStatistic.getPasswordsCount(9));
+			} else if (i == 12) {
+				assertEquals(2, enStatistic.getPasswordsCount(12));
+			} else {
+				assertEquals(0, enStatistic.getPasswordsCount(i));
+			}
+		}
+		assertEquals(5, enStatistic.getOverallPasswordsCount());
+
+		Statistic deStatistic = modelUtils.getStatistic("de");
+		assertNotNull(deStatistic);
+		for (int i = 8; i <= 31; i++) {
+			if (i == 8) {
+				assertEquals(1, deStatistic.getPasswordsCount(8));
+			} else if (i == 9) {
+				assertEquals(2, deStatistic.getPasswordsCount(9));
+			} else {
+				assertEquals(0, deStatistic.getPasswordsCount(i));
+			}
+		}
+		assertEquals(3, deStatistic.getOverallPasswordsCount());
 	}
 
 	public void testAddSamePasswords() {

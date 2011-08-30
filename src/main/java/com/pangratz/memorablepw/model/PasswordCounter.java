@@ -43,6 +43,11 @@ public class PasswordCounter {
 		return length;
 	}
 
+	public boolean increment(long inc) {
+		this.count += inc;
+		return (inc > 0);
+	}
+
 	public void setCount(long count) {
 		this.count = count;
 	}

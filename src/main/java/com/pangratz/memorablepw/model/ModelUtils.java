@@ -7,6 +7,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 
+import com.pangratz.memorablepw.util.AddPasswordUtil;
+
 public class ModelUtils {
 
 	private static final ModelUtils INSTANCE = new ModelUtils();
@@ -22,14 +24,28 @@ public class ModelUtils {
 		mPMF = PMF.get();
 	}
 
-	public void addPasswords(List<Password> passwords) {
+	public void addPasswords(AddPasswordUtil apu) {
+		addPasswordsToDatastore(apu.getPasswords());
+
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			pm.makePersistentAll(passwords);
+			Query pcQ = pm.newQuery(PasswordCounter.class);
+			List<PasswordCounter> updatedPcs = new LinkedList<PasswordCounter>();
+			List<PasswordCounter> pcs = (List<PasswordCounter>) pcQ.execute();
+			for (PasswordCounter passwordCounter : pcs) {
+				if (apu.applyUpdateCount(passwordCounter)) {
+					updatedPcs.add(passwordCounter);
+				}
+			}
+			pm.makePersistentAll(updatedPcs);
 		} finally {
 			pm.close();
 		}
+	}
 
+	@Deprecated
+	public void addPasswords(List<Password> passwords) {
+		addPasswordsToDatastore(passwords);
 		updatePasswordCounters();
 	}
 
@@ -185,6 +201,15 @@ public class ModelUtils {
 				}
 			}
 			pm.makePersistentAll(pwCounters);
+		} finally {
+			pm.close();
+		}
+	}
+
+	private void addPasswordsToDatastore(List<Password> passwords) {
+		PersistenceManager pm = mPMF.getPersistenceManager();
+		try {
+			pm.makePersistentAll(passwords);
 		} finally {
 			pm.close();
 		}
