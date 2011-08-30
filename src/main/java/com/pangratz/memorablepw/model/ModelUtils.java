@@ -58,15 +58,16 @@ public class ModelUtils {
 		}
 	}
 
-	public int getNextPasswordLength() {
+	public int getNextPasswordLength(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query configQuery = pm.newQuery(Configuration.class);
+			Query configQuery = pm.newQuery(Configuration.class, "lang == langParam");
+			configQuery.declareParameters("String langParam");
 			configQuery.setUnique(true);
-			Object object = configQuery.execute();
+			Object object = configQuery.execute(lang);
 			if (object == null) {
-				createConfigurationObject();
-				return getNextPasswordLength();
+				createConfigurationObject(lang);
+				return getNextPasswordLength(lang);
 			}
 			Configuration config = (Configuration) object;
 			return config.getNextPasswordLength();
@@ -114,15 +115,16 @@ public class ModelUtils {
 		}
 	}
 
-	public void updateNextPasswordLength() {
+	public void updateNextPasswordLength(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query configQuery = pm.newQuery(Configuration.class);
+			Query configQuery = pm.newQuery(Configuration.class, "lang == langParam");
+			configQuery.declareParameters("String langParam");
 			configQuery.setUnique(true);
-			Object object = configQuery.execute();
+			Object object = configQuery.execute(lang);
 			Configuration config = null;
 			if (object == null) {
-				config = createConfigurationObject();
+				config = createConfigurationObject(lang);
 			} else {
 				config = (Configuration) object;
 			}
@@ -136,10 +138,11 @@ public class ModelUtils {
 		}
 	}
 
-	private Configuration createConfigurationObject() {
+	private Configuration createConfigurationObject(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
 			Configuration configuration = new Configuration();
+			configuration.setLang(lang);
 			configuration.setNextPasswordLength(8);
 			return pm.makePersistent(configuration);
 		} finally {

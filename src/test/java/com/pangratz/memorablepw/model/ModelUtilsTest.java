@@ -108,15 +108,16 @@ public class ModelUtilsTest extends TestCase {
 
 	public void testGetNextPasswordLength() {
 		Configuration config = new Configuration();
+		config.setLang("en");
 		config.setNextPasswordLength(10);
 		pm.makePersistent(config);
 
-		int _length = modelUtils.getNextPasswordLength();
+		int _length = modelUtils.getNextPasswordLength("en");
 		assertEquals(10, _length);
 	}
 
 	public void testGetNextPasswordLengthInitial() {
-		int _length = modelUtils.getNextPasswordLength();
+		int _length = modelUtils.getNextPasswordLength("en");
 		assertEquals(8, _length);
 	}
 
@@ -271,19 +272,20 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testUpdateNextPasswordLength() {
-		assertEquals(8, modelUtils.getNextPasswordLength());
-		modelUtils.updateNextPasswordLength();
-		assertEquals(9, modelUtils.getNextPasswordLength());
+		assertEquals(8, modelUtils.getNextPasswordLength("en"));
+		modelUtils.updateNextPasswordLength("en");
+		assertEquals(9, modelUtils.getNextPasswordLength("en"));
 	}
 
 	public void testUpdateNextPasswordLengthOverflow() {
 		Configuration configuration = new Configuration();
+		configuration.setLang("en");
 		configuration.setNextPasswordLength(31);
 		pm.makePersistent(configuration);
 
-		assertEquals(31, modelUtils.getNextPasswordLength());
-		modelUtils.updateNextPasswordLength();
-		assertEquals(8, modelUtils.getNextPasswordLength());
+		assertEquals(31, modelUtils.getNextPasswordLength("en"));
+		modelUtils.updateNextPasswordLength("en");
+		assertEquals(8, modelUtils.getNextPasswordLength("en"));
 	}
 
 	private Password createPassword(String string) {
