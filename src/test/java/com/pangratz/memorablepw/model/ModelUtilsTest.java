@@ -184,21 +184,51 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testRemovePassword() {
-		Password pw1 = createPassword("abc");
-		Password pw2 = createPassword("abcd");
+		Password pw1 = createPassword("abcabcabc");
+		Password pw2 = createPassword("abcdabcdabcd");
 		List<Password> passwords = new ArrayList<Password>();
 		passwords.add(pw1);
 		passwords.add(pw2);
 
 		modelUtils.addPasswords(passwords);
-		modelUtils.removePassword("abc");
+		modelUtils.removePassword("abcabcabc");
 
 		Query query = pm.newQuery(Password.class);
 		List<Password> modelPws = (List<Password>) query.execute();
 
 		assertNotNull(modelPws);
 		assertEquals(1, modelPws.size());
-		assertEquals("abcd", modelPws.get(0).getText());
+		assertEquals("abcdabcdabcd", modelPws.get(0).getText());
+	}
+
+	public void testStatisticCounter() {
+		List<Password> passwords = new LinkedList<Password>();
+		passwords.add(createPassword("abcabcabc"));
+		passwords.add(createPassword("defdefdef"));
+		passwords.add(createPassword("ghighighi"));
+		passwords.add(createPassword("aaaaaaaaaaaa"));
+		passwords.add(createPassword("bbbbbbbbbbbb"));
+		pm.makePersistentAll(passwords);
+		modelUtils.updatePasswordCounters();
+
+		Statistic enStatistic = modelUtils.getStatistic("en");
+		assertEquals(3, enStatistic.getPasswordsCount(9));
+		assertEquals(2, enStatistic.getPasswordsCount(12));
+
+		List<Password> pws = new LinkedList<Password>();
+		pws.add(createPassword("abcdfghij"));
+		pws.add(createPassword("123456789"));
+		modelUtils.addPasswords(pws);
+
+		Statistic s = modelUtils.getStatistic("en");
+		assertEquals(5, s.getPasswordsCount(9));
+		assertEquals(2, s.getPasswordsCount(12));
+
+		modelUtils.removePassword("abcabcabc");
+
+		Statistic s2 = modelUtils.getStatistic("en");
+		assertEquals(4, s2.getPasswordsCount(9));
+		assertEquals(2, s2.getPasswordsCount(12));
 	}
 
 	public void testStatistics() {
@@ -286,6 +316,12 @@ public class ModelUtilsTest extends TestCase {
 		assertEquals(31, modelUtils.getNextPasswordLength("en"));
 		modelUtils.updateNextPasswordLength("en");
 		assertEquals(8, modelUtils.getNextPasswordLength("en"));
+	}
+
+	public void testUpdatePasswordCounters() {
+		modelUtils.updatePasswordCounters();
+		List<Statistic> statistics = modelUtils.getStatistics();
+		assertNotNull(statistics);
 	}
 
 	private Password createPassword(String string) {

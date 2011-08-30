@@ -29,6 +29,8 @@ public class ModelUtils {
 		} finally {
 			pm.close();
 		}
+
+		updatePasswordCounters();
 	}
 
 	public Password getNextPassword(int length) {
@@ -79,16 +81,17 @@ public class ModelUtils {
 	public Statistic getStatistic(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query query = pm.newQuery(Password.class, "length == lengthParam && lang == langParam");
-			query.declareParameters("int lengthParam, String langParam");
-			query.setResult("count(length)");
+			Query query = pm.newQuery(PasswordCounter.class, "lang == langParam");
+			query.declareParameters("String langParam");
+			List<PasswordCounter> passwordCounters = (List<PasswordCounter>) query.execute(lang);
 
 			Statistic statistic = new Statistic(lang);
 			int overallPasswordCount = 0;
-			for (int i = 8; i <= 31; i++) {
-				Integer count = (Integer) query.execute(i, lang);
-				statistic.setPasswordCount(i, count.intValue());
-				overallPasswordCount += count.intValue();
+			for (PasswordCounter passwordCounter : passwordCounters) {
+				long count = passwordCounter.getCount();
+				int length = passwordCounter.getLength();
+				statistic.setPasswordCount(length, (int) count);
+				overallPasswordCount += count;
 			}
 			statistic.setOverallPasswordsCount(overallPasswordCount);
 			return statistic;
@@ -104,12 +107,26 @@ public class ModelUtils {
 		return statistics;
 	}
 
-	public void removePassword(String password) {
+	public void removePassword(String text) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
-			Query query = pm.newQuery(Password.class, "text == passwordParam");
-			query.declareParameters("String passwordParam");
-			query.deletePersistentAll(password);
+			Query pwQuery = pm.newQuery(Password.class, "text == textParam");
+			pwQuery.declareParameters("String textParam");
+			pwQuery.setUnique(true);
+
+			Password password = (Password) pwQuery.execute(text);
+			String lang = password.getLang();
+			int length = password.getLength();
+
+			pm.deletePersistent(password);
+
+			Query pcQ = pm.newQuery(PasswordCounter.class, "lang == langParam && length == lengthParam");
+			pcQ.declareParameters("String langParam, int lengthParam");
+			pcQ.setUnique(true);
+			PasswordCounter pwCounter = (PasswordCounter) pcQ.execute(lang, length);
+			pwCounter.decrement();
+			pm.makePersistent(pwCounter);
+
 		} finally {
 			pm.close();
 		}
@@ -133,6 +150,41 @@ public class ModelUtils {
 			passwordLength = (passwordLength > 31) ? 8 : passwordLength;
 			config.setNextPasswordLength(passwordLength);
 			pm.makePersistent(config);
+		} finally {
+			pm.close();
+		}
+	}
+
+	public void updatePasswordCounters() {
+		String[] langs = new String[] { "en", "de" };
+
+		PersistenceManager pm = mPMF.getPersistenceManager();
+
+		Query query = pm.newQuery(Password.class, "length == lengthParam && lang == langParam");
+		query.declareParameters("int lengthParam, String langParam");
+		query.setResult("count(length)");
+
+		Query pwCounterQ = pm.newQuery(PasswordCounter.class, "length == lengthParam && lang == langParam");
+		pwCounterQ.declareParameters("int lengthParam, String langParam");
+		pwCounterQ.setUnique(true);
+
+		try {
+			List<PasswordCounter> pwCounters = new LinkedList<PasswordCounter>();
+			for (String lang : langs) {
+				for (int length = 8; length <= 31; length++) {
+					Integer count = (Integer) query.execute(length, lang);
+					Object pwCounterObj = pwCounterQ.execute(length, lang);
+					if (pwCounterObj == null) {
+						pwCounterObj = new PasswordCounter();
+					}
+					PasswordCounter pwCounter = (PasswordCounter) pwCounterObj;
+					pwCounter.setLang(lang);
+					pwCounter.setLength(length);
+					pwCounter.setCount(count);
+					pwCounters.add(pwCounter);
+				}
+			}
+			pm.makePersistentAll(pwCounters);
 		} finally {
 			pm.close();
 		}
