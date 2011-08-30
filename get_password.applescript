@@ -91,7 +91,7 @@ on getPasswordAssistantName()
 	if (lang is "en") then
 		return "Password Assistant"
 	else if (lang is "de") then
-		return "Passwort Assistent"
+		return "Kennwortassistent"
 	else
 		return null
 	end if
