@@ -103,7 +103,7 @@ applescript.execFile('get_lang.applescript', [], function(err, lang) {
 			// get statistic
 			var opts = {
 				host: HOST,
-				path: '/statistic'
+				path: '/statistic?lang=' + lang
 			};
 			http.get(opts, function(res){
 				res.setEncoding('utf8');
