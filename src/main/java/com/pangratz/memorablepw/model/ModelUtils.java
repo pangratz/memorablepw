@@ -1,5 +1,6 @@
 package com.pangratz.memorablepw.model;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -74,10 +75,6 @@ public class ModelUtils {
 		}
 	}
 
-	public Statistic getStatistic() {
-		return getStatistic("en");
-	}
-
 	public Statistic getStatistic(String lang) {
 		PersistenceManager pm = mPMF.getPersistenceManager();
 		try {
@@ -97,6 +94,13 @@ public class ModelUtils {
 		} finally {
 			pm.close();
 		}
+	}
+
+	public List<Statistic> getStatistics() {
+		LinkedList<Statistic> statistics = new LinkedList<Statistic>();
+		statistics.add(getStatistic("en"));
+		statistics.add(getStatistic("de"));
+		return statistics;
 	}
 
 	public void removePassword(String password) {
