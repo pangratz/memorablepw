@@ -35,14 +35,22 @@ public class StatisticResource extends MemorablePwServerResource {
 	@Override
 	protected Representation get(Variant variant) throws ResourceException {
 		String lang = getQuery().getFirstValue("lang");
+
 		if (lang == null || "".equals(lang)) {
-			lang = "en";
+			List<Statistic> statistics = mModelUtils.getStatistics();
+			List<JSONObject> jsonObjs = new LinkedList<JSONObject>();
+			for (Statistic statistic : statistics) {
+				jsonObjs.add(transformToJsonObject(statistic));
+			}
+			JSONArray arr = new JSONArray(jsonObjs);
+			return new JsonRepresentation(arr);
+
+		} else {
+			Statistic statistic = mModelUtils.getStatistic(lang);
+			JSONObject obj = transformToJsonObject(statistic);
+
+			return new JsonRepresentation(obj);
 		}
-
-		Statistic statistic = mModelUtils.getStatistic(lang);
-		JSONObject obj = transformToJsonObject(statistic);
-
-		return new JsonRepresentation(obj);
 	}
 
 	protected JSONObject transformToJsonObject(Statistic statistic) {
