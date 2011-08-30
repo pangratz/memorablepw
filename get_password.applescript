@@ -20,10 +20,17 @@ on run argv
 		end repeat
 	end if
 	
+	-- get the language specific name of keychain access
+	set keychainAccess to getKeychainAccessName()
+	if (keychainAccess is null) then
+		return "no handler for lang " & getLang()
+	end if
+	set passwordAssistant to getPasswordAssistantName()
+	
 	-- set the password counts as specified in the arguments
 	set arg_count to count argv
 	if (arg_count) > 31 then
-	-- check that there are no password counts for password length greater that 31
+		-- check that there are no password counts for password length greater that 31
 		set arg_count to 31
 	end if
 	repeat with i from 1 to arg_count
@@ -33,16 +40,16 @@ on run argv
 	-- initialize the list which will hold all generated passwords
 	set PASSWORDS to {}
 	
-	tell application "Password Assistant" to activate
+	tell application keychainAccess to activate
 	
 	tell application "System Events"
-		tell process "Password Assistant"
-			-- open 'Type' combobox
-			click pop up button 1 of group 1 of window 1
-			-- select 'Memorable' in the combobox, so a new password is generated
-			click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
+		tell process keychainAccess
+			-- press '+' button to create a new password
+			click button 4 of splitter group 1 of window keychainAccess
+			-- press on the key icon to open the password asssistant
+			click button 3 of sheet 1 of window keychainAccess
 			-- open passwords list
-			click button 1 of combo box 1 of group 1 of window 1
+			click button 1 of combo box 1 of group 1 of window passwordAssistant
 			
 			-- iterate over list which holds the password counts
 			repeat with pw_length from 8 to ((length of PASSWORD_COUNTS))
@@ -50,28 +57,76 @@ on run argv
 				set pw_count to item pw_length of PASSWORD_COUNTS
 				if (pw_count > 0) then
 					-- set the password length
-					set the value of slider 1 of group 1 of window 1 to pw_length
+					set the value of slider 1 of group 1 of window passwordAssistant to pw_length
 					
 					-- generate the passwords and fill up the list
 					repeat with i from 1 to pw_count
 						-- there are 10 passwords shown ...
-						set pw to the value of text field (i mod 10) of list 1 of scroll area 1 of combo box 1 of group 1 of window 1
+						set pw to the value of text field (i mod 10) of list 1 of scroll area 1 of combo box 1 of group 1 of window passwordAssistant
 						set PASSWORDS to PASSWORDS & pw
 						
 						-- refresh password list
 						if (i mod 10 is 0) then
-							click pop up button 1 of group 1 of window 1
-							click menu item 3 of menu 1 of pop up button 1 of group 1 of window 1
-							click button 1 of combo box 1 of group 1 of window 1
+							click pop up button 1 of group 1 of window passwordAssistant
+							click menu item 3 of menu 1 of pop up button 1 of group 1 of window passwordAssistant
+							click button 1 of combo box 1 of group 1 of window passwordAssistant
 						end if
 					end repeat
 				end if
 			end repeat
 			
+			click button 1 of sheet 1 of window keychainAccess
+			
 		end tell
 	end tell
 	
-	tell application "Password Assistant" to quit
+	
+	tell application keychainAccess to quit
 	return PASSWORDS
 	
 end run
+
+on getPasswordAssistantName()
+	set lang to getLang()
+	if (lang is "en") then
+		return "Password Assistant"
+	else if (lang is "de") then
+		return "Passwort Assistent"
+	else
+		return null
+	end if
+end getPasswordAssistantName
+
+on getKeychainAccessName()
+	set lang to getLang()
+	if (lang is "en") then
+		return "Keychain Access"
+	else if (lang is "de") then
+		return "Schlüsselbundverwaltung"
+	else
+		return null
+	end if
+end getKeychainAccessName
+
+-- a standard split function
+on split of aString by sep
+	local aList, delims
+	tell AppleScript
+		set delims to text item delimiters
+		set text item delimiters to sep
+		set aList to text items of aString
+		set text item delimiters to delims
+	end tell
+	return aList
+end split
+
+
+on getLang()
+	-- pipe the output of defaults through a few more commands
+	set cmd to "defaults read NSGlobalDomain AppleLanguages | awk '{gsub(/[^a-zA-Z-]/,\"\");print}' | grep -v '^$'"
+	set langs to do shell script cmd
+	
+	-- get the first item in the list
+	set lang to item 1 of (split of langs by return)
+	return lang
+end getLang
