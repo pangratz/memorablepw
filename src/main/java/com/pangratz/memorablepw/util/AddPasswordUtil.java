@@ -33,6 +33,10 @@ public class AddPasswordUtil {
 		return false;
 	}
 
+	public void c(String pw) {
+		c(pw, "en");
+	}
+
 	public Password c(String pw, String lang) {
 		Password p = new Password(pw, lang);
 		int index = p.getLength() - 8;
@@ -42,6 +46,8 @@ public class AddPasswordUtil {
 			deCounter[index]++;
 		else
 			throw new IllegalStateException("invalid language: " + lang);
+
+		passwords.add(p);
 
 		return p;
 	}

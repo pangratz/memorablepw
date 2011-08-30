@@ -1,6 +1,5 @@
 package com.pangratz.memorablepw.model;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,13 +19,12 @@ public class ModelUtilsTest extends TestCase {
 	private PersistenceManager pm;
 
 	public void testAddPasswords() {
-		Password pw1 = createPassword("abc");
-		Password pw2 = createPassword("abcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
+		modelUtils.updatePasswordCounters();
 
-		modelUtils.addPasswords(passwords);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc");
+		apu.c("abcdabcdabcd");
+		modelUtils.addPasswords(apu);
 
 		Query query = pm.newQuery(Password.class);
 		List<Password> modelPws = (List<Password>) query.execute();
@@ -77,13 +75,10 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testAddSamePasswords() {
-		Password pw1 = createPassword("abcd");
-		Password pw2 = createPassword("abcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
-
-		modelUtils.addPasswords(passwords);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcdabcd");
+		apu.c("abcdabcd");
+		modelUtils.addPasswords(apu);
 
 		Query query = pm.newQuery(Password.class);
 		List<Password> modelPws = (List<Password>) query.execute();
@@ -105,47 +100,40 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testGetGermanPassword() {
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(createPassword("hello"));
-		passwords.add(createPassword("hi"));
-		passwords.add(createPassword("hallo", "de"));
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("hellohello");
+		apu.c("hihihihi");
+		apu.c("hallhall", "de");
+		modelUtils.addPasswords(apu);
 
-		modelUtils.addPasswords(passwords);
-
-		Password password = modelUtils.getNextPassword(5, "de");
+		Password password = modelUtils.getNextPassword(8, "de");
 		assertNotNull(password);
-		assertEquals("hallo", password.getText());
-		assertEquals(5, password.getLength());
+		assertEquals("hallhall", password.getText());
+		assertEquals(8, password.getLength());
 	}
 
 	public void testGetNextAvailablePassword() {
-		Password pw1 = createPassword("abc");
-		Password pw2 = createPassword("abcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc");
+		apu.c("abcdabcddd");
+		modelUtils.addPasswords(apu);
 
-		modelUtils.addPasswords(passwords);
-
-		Password password = modelUtils.getNextPassword(2);
+		Password password = modelUtils.getNextPassword(8);
 		assertNotNull(password);
-		assertEquals("abc", password.getText());
-		assertEquals(3, password.getLength());
+		assertEquals("abcabcabc", password.getText());
+		assertEquals(9, password.getLength());
 	}
 
 	public void testGetNextAvailablePassword2() {
-		Password pw1 = createPassword("abc");
-		Password pw2 = createPassword("abcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcdabcd");
+		apu.c("abcdabcda");
+		modelUtils.addPasswords(apu);
 
-		modelUtils.addPasswords(passwords);
-
-		Password password = modelUtils.getNextPassword(5);
+		Password password = modelUtils.getNextPassword(10);
 		assertNotNull(password);
-		assertEquals("abc", password.getText());
-		assertEquals(3, password.getLength());
+		assertEquals("abcdabcd", password.getText());
+		assertEquals(8, password.getLength());
 	}
 
 	public void testGetNextPasswordLength() {
@@ -164,31 +152,30 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testGetPassword() {
-		Password pw1 = createPassword("abc");
-		Password pw2 = createPassword("abcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabca");
+		apu.c("abcdabcdasa");
+		modelUtils.addPasswords(apu);
 
-		modelUtils.addPasswords(passwords);
-
-		Password password = modelUtils.getNextPassword(3);
+		Password password = modelUtils.getNextPassword(9);
 		assertNotNull(password);
-		assertEquals("abc", password.getText());
-		assertEquals(3, password.getLength());
+		assertEquals("abcabcabca", password.getText());
+		assertEquals(10, password.getLength());
 	}
 
 	public void testGetStatistics() {
-		List<Password> passwords = new LinkedList<Password>();
-		passwords.add(createPassword("abcabcabc", "en"));
-		passwords.add(createPassword("defdefdef", "en"));
-		passwords.add(createPassword("ghighighi", "en"));
-		passwords.add(createPassword("aaaaaaaaaaaa", "en"));
-		passwords.add(createPassword("bbbbbbbbbbbb", "en"));
-		passwords.add(createPassword("abcdefgh", "de"));
-		passwords.add(createPassword("abcdefghi", "de"));
-		passwords.add(createPassword("abcdefghh", "de"));
-		modelUtils.addPasswords(passwords);
+		modelUtils.updatePasswordCounters();
+
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc", "en");
+		apu.c("defdefdef", "en");
+		apu.c("ghighighi", "en");
+		apu.c("aaaaaaaaaaaa", "en");
+		apu.c("bbbbbbbbbbbb", "en");
+		apu.c("abcdefgh", "de");
+		apu.c("abcdefghi", "de");
+		apu.c("abcdefghh", "de");
+		modelUtils.addPasswords(apu);
 
 		List<Statistic> statistics = modelUtils.getStatistics();
 		assertNotNull(statistics);
@@ -226,13 +213,11 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testRemovePassword() {
-		Password pw1 = createPassword("abcabcabc");
-		Password pw2 = createPassword("abcdabcdabcd");
-		List<Password> passwords = new ArrayList<Password>();
-		passwords.add(pw1);
-		passwords.add(pw2);
-
-		modelUtils.addPasswords(passwords);
+		modelUtils.updatePasswordCounters();
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc");
+		apu.c("abcdabcdabcd");
+		modelUtils.addPasswords(apu);
 		modelUtils.removePassword("abcabcabc");
 
 		Query query = pm.newQuery(Password.class);
@@ -257,10 +242,10 @@ public class ModelUtilsTest extends TestCase {
 		assertEquals(3, enStatistic.getPasswordsCount(9));
 		assertEquals(2, enStatistic.getPasswordsCount(12));
 
-		List<Password> pws = new LinkedList<Password>();
-		pws.add(createPassword("abcdfghij"));
-		pws.add(createPassword("123456789"));
-		modelUtils.addPasswords(pws);
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcdfghij");
+		apu.c("123456789");
+		modelUtils.addPasswords(apu);
 
 		Statistic s = modelUtils.getStatistic("en");
 		assertEquals(5, s.getPasswordsCount(9));
@@ -274,13 +259,15 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testStatistics() {
-		List<Password> passwords = new LinkedList<Password>();
-		passwords.add(createPassword("abcabcabc"));
-		passwords.add(createPassword("defdefdef"));
-		passwords.add(createPassword("ghighighi"));
-		passwords.add(createPassword("aaaaaaaaaaaa"));
-		passwords.add(createPassword("bbbbbbbbbbbb"));
-		modelUtils.addPasswords(passwords);
+		modelUtils.updatePasswordCounters();
+
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc");
+		apu.c("defdefdef");
+		apu.c("ghighighi");
+		apu.c("aaaaaaaaaaaa");
+		apu.c("bbbbbbbbbbbb");
+		modelUtils.addPasswords(apu);
 
 		Statistic statistic = modelUtils.getStatistic("en");
 		assertNotNull(statistic);
@@ -305,16 +292,18 @@ public class ModelUtilsTest extends TestCase {
 	}
 
 	public void testStatisticsMultipleLangs() {
-		List<Password> passwords = new LinkedList<Password>();
-		passwords.add(createPassword("abcabcabc", "en"));
-		passwords.add(createPassword("defdefdef", "en"));
-		passwords.add(createPassword("ghighighi", "en"));
-		passwords.add(createPassword("aaaaaaaaaaaa", "en"));
-		passwords.add(createPassword("bbbbbbbbbbbb", "en"));
-		passwords.add(createPassword("abcdefgh", "de"));
-		passwords.add(createPassword("abcdefghi", "de"));
-		passwords.add(createPassword("abcdefghh", "de"));
-		modelUtils.addPasswords(passwords);
+		modelUtils.updatePasswordCounters();
+
+		AddPasswordUtil apu = new AddPasswordUtil();
+		apu.c("abcabcabc", "en");
+		apu.c("defdefdef", "en");
+		apu.c("ghighighi", "en");
+		apu.c("aaaaaaaaaaaa", "en");
+		apu.c("bbbbbbbbbbbb", "en");
+		apu.c("abcdefgh", "de");
+		apu.c("abcdefghi", "de");
+		apu.c("abcdefghh", "de");
+		modelUtils.addPasswords(apu);
 
 		Statistic enStatistic = modelUtils.getStatistic("en");
 		assertNotNull(enStatistic);
@@ -368,10 +357,6 @@ public class ModelUtilsTest extends TestCase {
 
 	private Password createPassword(String string) {
 		return new Password(string);
-	}
-
-	private Password createPassword(String string, String lang) {
-		return new Password(string, lang);
 	}
 
 	@Override
