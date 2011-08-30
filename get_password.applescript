@@ -20,13 +20,6 @@ on run argv
 		end repeat
 	end if
 	
-	-- get the language specific name of keychain access
-	set keychainAccess to getKeychainAccessName()
-	if (keychainAccess is null) then
-		return "no handler for lang " & getLang()
-	end if
-	set passwordAssistant to getPasswordAssistantName()
-	
 	-- set the password counts as specified in the arguments
 	set arg_count to count argv
 	if (arg_count) > 31 then
@@ -36,6 +29,13 @@ on run argv
 	repeat with i from 1 to arg_count
 		set PASSWORD_COUNTS to PASSWORD_COUNTS & (get item i of argv as number)
 	end repeat
+	
+	-- get the language specific name of keychain access
+	set keychainAccess to getKeychainAccessName()
+	if (keychainAccess is null) then
+		return "no handler for lang " & getLang()
+	end if
+	set passwordAssistant to getPasswordAssistantName()
 	
 	-- initialize the list which will hold all generated passwords
 	set PASSWORDS to {}
