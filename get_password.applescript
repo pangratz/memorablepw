@@ -80,8 +80,10 @@ on run argv
 						end if						
 						
 						-- refresh password list
-						if ((field_index - 1) mod 10 is 0) then
-							set the value of slider 1 of group 1 of window passwordAssistant to pw_length
+						if (field_index mod 10 is 0) then
+							click pop up button 1 of group 1 of window passwordAssistant
+							click menu item 3 of menu 1 of pop up button 1 of group 1 of window passwordAssistant
+							click button 1 of combo box 1 of group 1 of window passwordAssistant
 						end if
 						
 						set idx to idx + 1
