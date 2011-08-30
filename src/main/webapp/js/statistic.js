@@ -6,8 +6,22 @@ $(document).ready(function() {
 		var datasets = [];
 		for (i in statisticData) {
 			var statistic = statisticData[i];
-			console.log(statistic);
 			var lang = statistic['lang'];
+			
+			$('#overallPasswordsCount').append(statistic.overallPasswordsCount + ' <b>' + lang + '</b> passwords</br>');
+			
+			var lastTweetDateHtml = 'no more ' + lang +' passwords to tweet :(';
+			if (statistic.overallPasswordsCount > 0) {
+				var days = statistic.period.days;
+				var hours = statistic.period.hours;
+				var minutes = statistic.period.minutes;
+				var periodStr = days + (days == 1 ? ' day ' : ' days ');
+				periodStr += hours + (hours == 1 ? ' hour ' : ' hours ');
+				periodStr += minutes + (minutes== 1 ? ' minute' : ' minutes');
+				lastTweetDateHtml = periodStr + ' until the end of <b>' + lang + '</b> passwords</br>';
+			}
+			$('#lastTweetPeriod').append(lastTweetDateHtml);
+			
 			datasets[i] = {
 				label: lang,
 				data: statistic.passwords.map(function(item) {
@@ -15,25 +29,8 @@ $(document).ready(function() {
 				})
 			};
 		}
-		
-		console.log(datasets);
-		
+				
 		$.plot($('#graph'), datasets);
-		// $('#overallPasswordsCount').html(statisticData.overallPasswordsCount + ' passwords');
-		
-		/*
-		var lastTweetDateHtml = 'no more passwords to tweet :(';
-		if (statisticData.overallPasswordsCount > 0) {
-			var days = statisticData.period.days;
-			var hours = statisticData.period.hours;
-			var minutes = statisticData.period.minutes;
-			var periodStr = days + (days == 1 ? ' day ' : ' days ');
-			periodStr += hours + (hours == 1 ? ' hour ' : ' hours ');
-			periodStr += minutes + (minutes== 1 ? ' minute' : ' minutes');
-			lastTweetDateHtml = periodStr;
-		}
-		$('#lastTweetPeriod').html(lastTweetDateHtml);
-		*/
 	});
 	
 });
