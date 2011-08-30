@@ -13,6 +13,7 @@ public class MemorablePwApplication extends Application {
 		router.attach("/statistic", StatisticResource.class);
 		router.attach("/tweetEnPassword", TweetEnPasswordResource.class);
 		router.attach("/tweetDePassword", TweetDePasswordResource.class);
+		router.attach("/updatePasswordCounters", UpdatePasswordCountersResource.class);
 		return router;
 	}
 }
