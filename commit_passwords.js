@@ -42,8 +42,8 @@ var submitPasswords = function(lang, pwLength, pwCount) {
 		while(L) this[--L]= what;
 		return this;
 	};
-	// 31 - 8 = 23
-	var counts = [].repeat(0, 23);
+	// 31 - 8 + 1 = 24
+	var counts = [].repeat(0, 24);
 	counts[pwLength-8] = pwCount;
 	applescript.execFile('get_password.applescript', counts, function(err, rtn) {
 		if (err) {
