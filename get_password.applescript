@@ -48,6 +48,12 @@ on run argv
 			click button 4 of splitter group 1 of window keychainAccess
 			-- press on the key icon to open the password asssistant
 			click button 3 of sheet 1 of window keychainAccess
+			
+			-- set 'memorable' passwords
+			click pop up button 1 of group 1 of window passwordAssistant
+			click menu item 3 of menu 1 of pop up button 1 of group 1 of window passwordAssistant
+			click button 1 of combo box 1 of group 1 of window passwordAssistant
+			
 			-- open passwords list
 			click button 1 of combo box 1 of group 1 of window passwordAssistant
 			
@@ -75,9 +81,7 @@ on run argv
 						
 						-- refresh password list
 						if ((field_index - 1) mod 10 is 0) then
-							click pop up button 1 of group 1 of window passwordAssistant
-							click menu item 3 of menu 1 of pop up button 1 of group 1 of window passwordAssistant
-							click button 1 of combo box 1 of group 1 of window passwordAssistant
+							set the value of slider 1 of group 1 of window passwordAssistant to pw_length
 						end if
 						
 						set idx to idx + 1
