@@ -40,6 +40,12 @@ public class StatisticResource extends MemorablePwServerResource {
 		}
 
 		Statistic statistic = mModelUtils.getStatistic(lang);
+		JSONObject obj = transformToJsonObject(statistic);
+
+		return new JsonRepresentation(obj);
+	}
+
+	protected JSONObject transformToJsonObject(Statistic statistic) {
 		List<Object> data = new LinkedList<Object>();
 
 		for (int i = 8; i <= 31; i++) {
@@ -70,7 +76,6 @@ public class StatisticResource extends MemorablePwServerResource {
 			periodData.put("minutes", period.getMinutes());
 			objData.put("period", new JSONObject(periodData));
 		}
-
-		return new JsonRepresentation(new JSONObject(objData));
+		return new JSONObject(objData);
 	}
 }
