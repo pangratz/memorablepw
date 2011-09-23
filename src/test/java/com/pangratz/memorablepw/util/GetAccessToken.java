@@ -43,8 +43,8 @@ public class GetAccessToken {
 	}
 
 	private static void storeAccessToken(long useId, AccessToken accessToken) {
-		System.out.println("token: " + accessToken.getToken());
-		System.out.println("secret: " + accessToken.getTokenSecret());
+		System.out.println("token=" + accessToken.getToken());
+		System.out.println("secret=" + accessToken.getTokenSecret());
 	}
 
 }
