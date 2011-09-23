@@ -250,6 +250,7 @@
 				</dependencies>
 				<configuration>
 					<serverId>appengine.google.com</serverId>
+					<splitJars>true</splitJars>
 				</configuration>
 			</plugin>
 
@@ -287,7 +288,7 @@
 
 		<!-- Specify AppEngine version for your project. It should match SDK version 
 			pointed to by ${gae.home} property (Typically, one used by your Eclipse plug-in) -->
-		<gae.version>1.5.2</gae.version>
+		<gae.version>1.5.4</gae.version>
 
 		<!-- Upload to http://test.latest.<applicationName>.appspot.com by default -->
 		<gae.application.version>test</gae.application.version>
